@@ -4,7 +4,7 @@ var request;
 
 
 
-describe('fx()', function(){
+describe('fx() fresh', function(){
   var server;
   before(function(){
     server = createServer();
@@ -15,7 +15,14 @@ describe('fx()', function(){
     request.get('/')
            .expect(200, '{}', done)
   })
+
+  it('should return {} when no files exist for owner', function(done){
+    request.get('/foobar/')
+           .expect(200, '{}', done)
+  })
 });
+
+
 
 function createServer() {
   var app = express();
