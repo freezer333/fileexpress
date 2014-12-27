@@ -1,0 +1,17 @@
+{
+  "name": "fileexpress",
+  "version": "0.0.0",
+  "description": "File upload/serving routes for express 4+ using MongoDB GridFS",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "files",
+    "rest",
+    "express",
+    "gridfs"
+  ],
+  "author": "Scott Frees <scott.frees@gmail.com> (http://scottfrees.com/)",
+  "license": "MIT"
+}
