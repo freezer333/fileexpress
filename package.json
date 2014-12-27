@@ -13,5 +13,13 @@
     "gridfs"
   ],
   "author": "Scott Frees <scott.frees@gmail.com> (http://scottfrees.com/)",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "~2.1.0",
+    "chai": "~1.10.0",
+    "supertest": "~0.15.0"
+  },
+  "dependencies": {
+    "express": "~4.10.6"
+  }
 }
