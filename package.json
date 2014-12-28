@@ -4,7 +4,7 @@
   "description": "File upload/serving routes for express 4+ using MongoDB GridFS",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --timeout 15000"
   },
   "keywords": [
     "files",
@@ -17,9 +17,13 @@
   "devDependencies": {
     "mocha": "~2.1.0",
     "chai": "~1.10.0",
-    "supertest": "~0.15.0"
+    "supertest": "~0.15.0",
+    "should": "~4.4.2",
+    "express-busboy": "~2.1.0"
   },
   "dependencies": {
-    "express": "~4.10.6"
+    "express": "~4.10.6",
+    "gridfs-stream": "~0.5.3",
+    "mongodb": "~1.4.26"
   }
 }
