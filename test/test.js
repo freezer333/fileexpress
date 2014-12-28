@@ -103,7 +103,21 @@ describe('fx()', function(){
                     return "Response was expected to be 200";
                   }
                   if (!('owner' in res.body.metadata)) return "Response was missing owner key";
-                  if (res.body.metadata.owner != owner ) return "Response was not as exected - was " + res.body.contentType;
+                  if (res.body.metadata.owner != owner ) return "Response was not as exected - was " + res.body.metadata.owner;
+              })
+              .end(done)
+    });
+    it('should return expected filename in root and metadata', function(done) {
+      request.get('/bar/'+_id+"/meta/")
+             .expect(function(res) {
+                  if ( res.status != 200 ) {
+                    return "Response was expected to be 200";
+                  }
+                  if (!('filename' in res.body.metadata)) return "Response was missing filename key (metadata)";
+                  if (res.body.metadata.filename != "test.txt" ) return "Response (metadata) was not as exected - was " + res.body.metatdata.filename;
+
+                  if (!('filename' in res.body)) return "Response was missing filename key";
+                  if (res.body.filename != "test.txt" ) return "Response was not as exected - was " + res.body.filename;
               })
               .end(done)
     });
