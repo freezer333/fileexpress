@@ -96,6 +96,17 @@ describe('fx()', function(){
               })
               .end(done)
     });
+    it('should return expected owner', function(done) {
+      request.get('/bar/'+_id+"/meta/")
+             .expect(function(res) {
+                  if ( res.status != 200 ) {
+                    return "Response was expected to be 200";
+                  }
+                  if (!('owner' in res.body.metadata)) return "Response was missing owner key";
+                  if (res.body.metadata.owner != owner ) return "Response was not as exected - was " + res.body.contentType;
+              })
+              .end(done)
+    });
   });
 
 

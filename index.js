@@ -51,8 +51,6 @@ var fx = function (mongo, db) {
       }
       res.json(files[0]);
     })
-
-
   }
 
   router.get('/', function(req, res, next) {
