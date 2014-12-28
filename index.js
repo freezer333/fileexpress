@@ -40,27 +40,67 @@ var fx = function (mongo, db) {
     res.json({ });
   };
 
-  var getmeta = function(req, res, next) {
-    var id = req.params.id;
-    gfs.files.find({ _id: new ObjectID(id) }).toArray(function (err, files) {
+  var delete_file = function (req, res, next) {
+    gfs.files.find(makeq(req)).toArray(function (err, files) {
       if ( err ) {
         res.status(400).send('file could not be found because of an invalid query');
       }
-      if ( files.length < 1 ) {
+      else if ( files.length < 1 ) {
         res.status(404).send('file could not be found');
       }
-      res.json(files[0]);
+      else if ( files[0].metadata.owner != req.params.owner) {
+        res.status(404).send('file could not be found');
+      }
+      else {
+        gfs.remove(makeq(req), function (err) {
+          if (err) {
+            res.status(400).send('file could not be found because of an invalid query');
+          }
+          else {
+            res.status(200).end();
+          }
+        });      
+      }
+    })
+  }
+
+  function makeq(req) {
+    var id = req.params.id;
+    var owner = req.params.owner;
+    var q = {_id : new ObjectID(id)};
+    return q;
+  }
+
+  var getmeta = function(req, res, next) {
+    gfs.files.find(makeq(req)).toArray(function (err, files) {
+      if ( err ) {
+        res.status(400).send('file could not be found because of an invalid query');
+      }
+      else if ( files.length < 1 ) {
+        res.status(404).send('file could not be found');
+      }
+      else if ( files[0].metadata.owner != req.params.owner) {
+        res.status(404).send('file could not be found');
+      }
+      else {
+        res.json(files[0]);
+      }
     })
   }
   var getcontent = function(req, res, next) {
-    var id = req.params.id;
-    var q = { _id: new ObjectID(id) };
+    var q= makeq(req);
     gfs.files.find(q).toArray(function (err, files) {
       if ( err ) {
         res.status(400).send('file could not be found because of an invalid query');
+        return;
       }
       if ( files.length < 1 ) {
         res.status(404).send('file could not be found');
+        return;
+      }
+      if ( files[0].metadata.owner != req.params.owner) {
+        res.status(404).send('file could not be found');
+        return;
       }
       var content_type = files[0].contentType;
       res.set('Content-Type', content_type);
@@ -79,6 +119,8 @@ var fx = function (mongo, db) {
   router.get('/:owner/:id/meta', getmeta);
 
   router.get('/:owner/:id', getcontent);
+
+  router.delete('/:owner/:id', delete_file);
 
   return router;
 }

@@ -87,6 +87,10 @@ describe('fx()', function(){
               })
               .end(done)
     });
+    it('should return 404 for meta request if owner does not match', function(done) {
+      request.get('/foobar/'+_id+"/meta/")
+             .expect(404, done);
+    });
     it('should return expected content type', function(done) {
       request.get('/bar/'+_id+"/meta/")
              .expect(function(res) {
@@ -106,6 +110,17 @@ describe('fx()', function(){
                   }
                   if (!('owner' in res.body.metadata)) return "Response was missing owner key";
                   if (res.body.metadata.owner != owner ) return "Response was not as exected - was " + res.body.metadata.owner;
+              })
+              .end(done)
+    });
+    it('should return expected other from metadata', function(done) {
+      request.get('/bar/'+_id+"/meta/")
+             .expect(function(res) {
+                  if ( res.status != 200 ) {
+                    return "Response was expected to be 200";
+                  }
+                  if (!('other' in res.body.metadata)) return "Response was missing other key";
+                  if (res.body.metadata.other != 'abc' ) return "Response was not as exected - was " + res.body.metadata.other;
               })
               .end(done)
     });
@@ -147,6 +162,41 @@ describe('fx()', function(){
              })
              .expect(200, done);
     });
+  });
+
+  describe('file deletion', function(){
+    var _id;
+    before( function(done) {
+      request.post('/ghost/')
+             .field('metadata', '{"filename":"test.txt", "other":"abc"}')
+             .attach('file', 'test/files/test.txt')
+             .end(function(err, res) {
+               _id = res.body._id;
+               done();
+             });
+    });
+    it('should return OK for existing file', function(done) {
+      request.delete('/ghost/'+_id)
+             .expect(200, done);
+    });
+    it('should return 404 for missing file', function(done) {
+      request.delete('/foobar/'+_id)
+             .expect(404, done);
+    });
+    describe('after file deletion', function(){
+      before( function(done) {
+        request.delete('/ghost/'+_id).end(done)
+      });
+      it('should return 404 for meta request after deletion', function(done) {
+        request.get('/ghost/'+_id+"/meta/")
+               .expect(404, done);
+      });
+      it('should return 404 for content request after deletion', function(done) {
+        request.get('/ghost/'+_id)
+               .expect(404, done);
+      });
+    });
+
   });
 
 
