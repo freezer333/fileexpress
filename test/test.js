@@ -1,6 +1,7 @@
 var assert = require('assert');
 var should = require('should');
 var express = require('express');
+var fs = require('fs');
 var fx = require('..');
 
 var request;
@@ -27,7 +28,7 @@ describe('fx()', function(){
   });
 
   after(function(){
-//    db.dropDatabase();
+    db.dropDatabase();
   })
 
   it('should return {} at root request', function(done){
@@ -60,6 +61,7 @@ describe('fx()', function(){
     var _id;
     var contentType = 'text/plain';
     var owner = 'bar';
+    var posted_content = fs.readFileSync('test/files/test.txt','utf8')
 
     before( function(done) {
       request.post('/bar/')
@@ -120,6 +122,30 @@ describe('fx()', function(){
                   if (res.body.filename != "test.txt" ) return "Response was not as exected - was " + res.body.filename;
               })
               .end(done)
+    });
+    it('should return expected file content type in header', function(done) {
+      request.get('/bar/'+_id)
+             .expect(function(res) {
+               if ( res.status != 200 ) {
+                 return "Response was expected to be 200";
+               }
+               if (res.get('Content-Type').indexOf('text/plain') < 0 ) {
+                 return "Unexpected content type = " + res.get('Content-Type');
+               }
+             })
+             .expect(200, done);
+    });
+    it('should return expected file contents', function(done) {
+      request.get('/bar/'+_id)
+             .expect(function(res) {
+               if ( res.status != 200 ) {
+                 return "Response was expected to be 200";
+               }
+               if ( res.text != posted_content) {
+                 return "Response content was not as expected ["+res.text+"]"
+               }
+             })
+             .expect(200, done);
     });
   });
 

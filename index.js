@@ -52,6 +52,22 @@ var fx = function (mongo, db) {
       res.json(files[0]);
     })
   }
+  var getcontent = function(req, res, next) {
+    var id = req.params.id;
+    var q = { _id: new ObjectID(id) };
+    gfs.files.find(q).toArray(function (err, files) {
+      if ( err ) {
+        res.status(400).send('file could not be found because of an invalid query');
+      }
+      if ( files.length < 1 ) {
+        res.status(404).send('file could not be found');
+      }
+      var content_type = files[0].contentType;
+      res.set('Content-Type', content_type);
+      var readstream = gfs.createReadStream(q);
+      readstream.pipe(res);
+    });
+  }
 
   router.get('/', function(req, res, next) {
     res.json({ });
@@ -61,6 +77,8 @@ var fx = function (mongo, db) {
   router.put('/:owner/', add);
   router.post('/:owner/', add);
   router.get('/:owner/:id/meta', getmeta);
+
+  router.get('/:owner/:id', getcontent);
 
   return router;
 }
