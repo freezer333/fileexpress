@@ -2,11 +2,12 @@ var assert = require('assert');
 var should = require('should');
 var express = require('express');
 var fx = require('..');
+
 var request;
 
 
 
-describe('fx() fresh', function(){
+describe('fx()', function(){
   var app;
   var db;
 
@@ -55,25 +56,51 @@ describe('fx() fresh', function(){
            .end(done)
   });
 
-  it('should allow meta data to be retrieved', function(done) {
-    request.post('/bar/')
-           .field('metadata', '{"filename":"test.txt", "other":"abc"}')
-           .attach('file', 'test/files/test.txt')
-           .end(function (err, req) {
-             request.get('/bar/'+req.body._id+"/meta/")
-                    .expect(function(res) {
-                      if ( res.status != 200 ) {
-                        return "Response was expected to be 200";
-                      }
-                      if (!('_id' in res.body)) return "Response was missing _id key";
-                      if (!('filename' in res.body)) return "Response was missing filename key";
-                      if (!('metadata' in res.body)) return "Response was missing metadata key";
-                      if (!('other') in res.body.metadata) return "Metadata was missing other key";
-                      if (!('owner') in res.body.metadata) return "Metadata was missing other key";
-                    })
-                    .end(done)
-           });
+  describe('fx() existing file', function(){
+    var _id;
+    var contentType = 'text/plain';
+    var owner = 'bar';
+
+    before( function(done) {
+      request.post('/bar/')
+             .field('metadata', '{"filename":"test.txt", "other":"abc"}')
+             .attach('file', 'test/files/test.txt')
+             .end(function(err, res) {
+               _id = res.body._id;
+               done();
+             });
+    });
+
+    it('should allow meta data to be retrieved', function(done) {
+      request.get('/bar/'+_id+"/meta/")
+             .expect(function(res) {
+                  if ( res.status != 200 ) {
+                    return "Response was expected to be 200";
+                  }
+                  if (!('_id' in res.body)) return "Response was missing _id key";
+                  if (!('filename' in res.body)) return "Response was missing filename key";
+                  if (!('metadata' in res.body)) return "Response was missing metadata key";
+                  if (!('other') in res.body.metadata) return "Metadata was missing other key";
+                  if (!('owner') in res.body.metadata) return "Metadata was missing other key";
+              })
+              .end(done)
+    });
+    it('should return expected content type', function(done) {
+      request.get('/bar/'+_id+"/meta/")
+             .expect(function(res) {
+                  if ( res.status != 200 ) {
+                    return "Response was expected to be 200";
+                  }
+                  if (!('contentType' in res.body)) return "Response was missing contentType key";
+                  if (res.body.contentType != contentType ) return "Response was not as exected - was " + res.body.contentType;
+              })
+              .end(done)
+    });
   });
+
+
+
+
 });
 
 

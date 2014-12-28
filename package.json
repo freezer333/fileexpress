@@ -24,6 +24,7 @@
   "dependencies": {
     "express": "~4.10.6",
     "gridfs-stream": "~0.5.3",
-    "mongodb": "~1.4.26"
+    "mongodb": "~1.4.26",
+    "mime": "~1.2.11"
   }
 }

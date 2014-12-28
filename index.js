@@ -2,6 +2,7 @@ var express = require('express');
 var Grid = require('gridfs-stream');
 var fs = require('fs');
 var ObjectID = require('mongodb').ObjectID;
+var mime = require('mime');
 
 var fx = function (mongo, db) {
 
@@ -21,9 +22,10 @@ var fx = function (mongo, db) {
     }
     var file_data = {
       filename : metadata.filename,
-      metadata : metadata
+      metadata : metadata,
+      content_type : mime.lookup(metadata.filename),
+      mode : "w"
     }
-
     var meta = metadata;
     file_data.metadata.owner = req.params.owner;
 
