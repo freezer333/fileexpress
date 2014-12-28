@@ -26,7 +26,7 @@ describe('fx() fresh', function(){
   });
 
   after(function(){
-    db.dropDatabase();
+//    db.dropDatabase();
   })
 
   it('should return {} at root request', function(done){
@@ -54,7 +54,29 @@ describe('fx() fresh', function(){
            .expect(has_id)
            .end(done)
   });
+
+  it('should allow meta data to be retrieved', function(done) {
+    request.post('/bar/')
+           .field('metadata', '{"filename":"test.txt", "other":"abc"}')
+           .attach('file', 'test/files/test.txt')
+           .end(function (err, req) {
+             request.get('/bar/'+req.body._id+"/meta/")
+                    .expect(function(res) {
+                      if ( res.status != 200 ) {
+                        return "Response was expected to be 200";
+                      }
+                      if (!('_id' in res.body)) return "Response was missing _id key";
+                      if (!('filename' in res.body)) return "Response was missing filename key";
+                      if (!('metadata' in res.body)) return "Response was missing metadata key";
+                      if (!('other') in res.body.metadata) return "Metadata was missing other key";
+                      if (!('owner') in res.body.metadata) return "Metadata was missing other key";
+                    })
+                    .end(done)
+           });
+  });
 });
+
+
 
 function has_id(res) {
   if ( res.status != 200 ) {

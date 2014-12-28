@@ -1,7 +1,7 @@
 var express = require('express');
 var Grid = require('gridfs-stream');
 var fs = require('fs');
-
+var ObjectID = require('mongodb').ObjectID;
 
 var fx = function (mongo, db) {
 
@@ -19,17 +19,39 @@ var fx = function (mongo, db) {
       res.status(406).send('filename is required property of metadata field');
       return;
     }
+    var file_data = {
+      filename : metadata.filename,
+      metadata : metadata
+    }
 
-    var writestream = gfs.createWriteStream({filename : metadata.filename});
+    var meta = metadata;
+    file_data.metadata.owner = req.params.owner;
+
+    var writestream = gfs.createWriteStream(file_data);
     fs.createReadStream(req.files.file.file).pipe(writestream);
     writestream.on('close', function (file) {
-      res.json({ _id:file._id});
+      res.json(file);
     });
   }
 
   var list = function(req, res, next) {
     res.json({ });
   };
+
+  var getmeta = function(req, res, next) {
+    var id = req.params.id;
+    gfs.files.find({ _id: new ObjectID(id) }).toArray(function (err, files) {
+      if ( err ) {
+        res.status(400).send('file could not be found because of an invalid query');
+      }
+      if ( files.length < 1 ) {
+        res.status(404).send('file could not be found');
+      }
+      res.json(files[0]);
+    })
+
+
+  }
 
   router.get('/', function(req, res, next) {
     res.json({ });
@@ -38,6 +60,7 @@ var fx = function (mongo, db) {
   router.get('/:owner/', list);
   router.put('/:owner/', add);
   router.post('/:owner/', add);
+  router.get('/:owner/:id/meta', getmeta);
 
   return router;
 }
