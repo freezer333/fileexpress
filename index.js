@@ -7,6 +7,7 @@ var mime = require('mime');
 var fx = function (mongo, db) {
 
   var router = express.Router();
+  var db = db;
   var gfs = Grid(db, mongo);
 
   var add = function(req, res, next) {
@@ -37,7 +38,11 @@ var fx = function (mongo, db) {
   }
 
   var list = function(req, res, next) {
-    res.json({ });
+    var collection = db.collection('fs.files');
+    collection.find({"metadata.owner":req.params.owner}).toArray(function(err, docs) {
+      res.json(docs);
+    });
+
   };
 
   var delete_file = function (req, res, next) {
@@ -59,7 +64,7 @@ var fx = function (mongo, db) {
           else {
             res.status(200).end();
           }
-        });      
+        });
       }
     })
   }

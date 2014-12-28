@@ -36,9 +36,9 @@ describe('fx()', function(){
            .expect(200, '{}', done)
   })
 
-  it('should return {} when no files exist for owner', function(done){
+  it('should return [] when no files exist for owner', function(done){
     request.get('/foobar/')
-           .expect(200, '{}', done)
+           .expect(200, '[]', done)
   })
 
   it('should allow a file to be put', function(done) {
@@ -57,7 +57,7 @@ describe('fx()', function(){
            .end(done)
   });
 
-  describe('fx() existing file', function(){
+  describe('existing file tests', function(){
     var _id;
     var contentType = 'text/plain';
     var owner = 'bar';
@@ -195,6 +195,41 @@ describe('fx()', function(){
         request.get('/ghost/'+_id)
                .expect(404, done);
       });
+    });
+
+  });
+
+  describe('owner listings', function(){
+    before( function(done) {
+      request.post('/rockefeller/')
+             .field('metadata', '{"filename":"test1.txt"}')
+             .attach('file', 'test/files/test.txt')
+             .end(function(res){
+               request.post('/rockefeller/')
+                      .field('metadata', '{"filename":"test2.txt"}')
+                      .attach('file', 'test/files/test.txt')
+                      .end(done);
+             });
+    });
+    it('should return expected number of metadata files for owner', function(done) {
+      request.get('/rockefeller/')
+             .expect(200)
+             .expect(function(res) {
+               var listings = JSON.parse(res.text);
+               if ( !listings || !(listings instanceof Array) || listings.length < 1 ) {
+                 return "Listings do not contain expected number of files for this owner"
+               }
+               if ( listings.length != 2 ) {
+                 return "Listings do not contain expected number of files for this owner"
+               }
+               for ( i in listings ) {
+                 var file = listings[i];
+                 if ( file.metadata.owner != 'rockefeller') {
+                   return "Owner - " + file.metadata.owner + " does not match expected owner";
+                 }
+               }
+             }).
+             end(done);
     });
 
   });
