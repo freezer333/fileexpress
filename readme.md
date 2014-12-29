@@ -8,7 +8,7 @@ or by file id, along with file meta data, and can be removed with delete calls.
 
 ## Installation
 
-```
+```sh
 npm install fileexpress
 ```
 
@@ -18,7 +18,7 @@ The module exports a factory method that is used to create an express 4 router. 
 plug this into your app and you are ready to go.  The factory method requires you to pass in
 an instance of the mongo driver, along with the opened database.
 
-```
+```js
 var fx = require('fileexpress');
 
 ... create mongo connection ...
@@ -35,7 +35,7 @@ app.listen(3000);
 
 ## Examples
 
-```
+```js
 var app = express();
 var bb = require('express-busboy');
 
