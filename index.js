@@ -10,6 +10,9 @@ var fx = function (mongo, db) {
   var db = db;
   var gfs = Grid(db, mongo);
 
+
+
+
   var add = function(req, res, next) {
     if ( !req.body.metadata ) {
       res.status(406).send('metadata must be sent along with the new file');
@@ -37,13 +40,18 @@ var fx = function (mongo, db) {
     });
   }
 
+
+
+
   var list = function(req, res, next) {
     var collection = db.collection('fs.files');
     collection.find({"metadata.owner":req.params.owner}).toArray(function(err, docs) {
       res.json(docs);
     });
-
   };
+
+
+
 
   var delete_file = function (req, res, next) {
     gfs.files.find(makeq(req)).toArray(function (err, files) {
@@ -66,8 +74,10 @@ var fx = function (mongo, db) {
           }
         });
       }
-    })
+    }
   }
+
+
 
   function makeq(req) {
     var id = req.params.id;
@@ -75,6 +85,9 @@ var fx = function (mongo, db) {
     var q = {_id : new ObjectID(id)};
     return q;
   }
+
+
+
 
   var getmeta = function(req, res, next) {
     gfs.files.find(makeq(req)).toArray(function (err, files) {
@@ -92,6 +105,9 @@ var fx = function (mongo, db) {
       }
     })
   }
+
+
+
   var getcontent = function(req, res, next) {
     var q= makeq(req);
     gfs.files.find(q).toArray(function (err, files) {
@@ -114,17 +130,19 @@ var fx = function (mongo, db) {
     });
   }
 
+
+
   router.get('/', function(req, res, next) {
     res.json({ });
   });
 
+
+
   router.get('/:owner/', list);
+  router.get('/:owner/:id/meta', getmeta);
+  router.get('/:owner/:id', getcontent);
   router.put('/:owner/', add);
   router.post('/:owner/', add);
-  router.get('/:owner/:id/meta', getmeta);
-
-  router.get('/:owner/:id', getcontent);
-
   router.delete('/:owner/:id', delete_file);
 
   return router;

@@ -39,7 +39,7 @@ describe('fx()', function(){
   it('should return [] when no files exist for owner', function(done){
     request.get('/foobar/')
            .expect(200, '[]', done)
-  })
+  });
 
   it('should allow a file to be put', function(done) {
     request.put('/foo/')
@@ -49,6 +49,8 @@ describe('fx()', function(){
            .end(done)
   });
 
+
+
   it('should allow a file to be posted', function(done) {
     request.post('/foo/')
            .field('metadata', '{"filename":"test.txt"}')
@@ -56,6 +58,8 @@ describe('fx()', function(){
            .expect(has_id)
            .end(done)
   });
+
+
 
   describe('existing file tests', function(){
     var _id;
@@ -87,10 +91,12 @@ describe('fx()', function(){
               })
               .end(done)
     });
+
     it('should return 404 for meta request if owner does not match', function(done) {
       request.get('/foobar/'+_id+"/meta/")
              .expect(404, done);
     });
+
     it('should return expected content type', function(done) {
       request.get('/bar/'+_id+"/meta/")
              .expect(function(res) {
@@ -102,6 +108,7 @@ describe('fx()', function(){
               })
               .end(done)
     });
+
     it('should return expected owner', function(done) {
       request.get('/bar/'+_id+"/meta/")
              .expect(function(res) {
@@ -113,6 +120,7 @@ describe('fx()', function(){
               })
               .end(done)
     });
+
     it('should return expected other from metadata', function(done) {
       request.get('/bar/'+_id+"/meta/")
              .expect(function(res) {
@@ -124,6 +132,7 @@ describe('fx()', function(){
               })
               .end(done)
     });
+
     it('should return expected filename in root and metadata', function(done) {
       request.get('/bar/'+_id+"/meta/")
              .expect(function(res) {
@@ -138,6 +147,7 @@ describe('fx()', function(){
               })
               .end(done)
     });
+
     it('should return expected file content type in header', function(done) {
       request.get('/bar/'+_id)
              .expect(function(res) {
@@ -150,6 +160,7 @@ describe('fx()', function(){
              })
              .expect(200, done);
     });
+
     it('should return expected file contents', function(done) {
       request.get('/bar/'+_id)
              .expect(function(res) {
@@ -164,6 +175,9 @@ describe('fx()', function(){
     });
   });
 
+
+
+
   describe('file deletion', function(){
     var _id;
     before( function(done) {
@@ -175,14 +189,17 @@ describe('fx()', function(){
                done();
              });
     });
+
     it('should return OK for existing file', function(done) {
       request.delete('/ghost/'+_id)
              .expect(200, done);
     });
+
     it('should return 404 for missing file', function(done) {
       request.delete('/foobar/'+_id)
              .expect(404, done);
     });
+
     describe('after file deletion', function(){
       before( function(done) {
         request.delete('/ghost/'+_id).end(done)
@@ -196,8 +213,10 @@ describe('fx()', function(){
                .expect(404, done);
       });
     });
-
   });
+
+
+
 
   describe('owner listings', function(){
     before( function(done) {
@@ -211,6 +230,8 @@ describe('fx()', function(){
                       .end(done);
              });
     });
+
+
     it('should return expected number of metadata files for owner', function(done) {
       request.get('/rockefeller/')
              .expect(200)
@@ -231,7 +252,6 @@ describe('fx()', function(){
              }).
              end(done);
     });
-
   });
 
 
