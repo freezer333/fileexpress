@@ -47,4 +47,9 @@ bb.extend(app, {
   path: 'test/files/uploads'
 });
 
+router = fx.make_router(mongo, db);
+app.use('/', router);
+
+app.listen(3000);
+
 ```

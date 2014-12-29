@@ -1,6 +1,6 @@
 {
   "name": "fileexpress",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "File upload/serving routes for express 4+ using MongoDB GridFS",
   "main": "index.js",
   "scripts": {
@@ -12,6 +12,10 @@
     "express",
     "gridfs"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/freezer333/fileexpress"
+  },
   "author": "Scott Frees <scott.frees@gmail.com> (http://scottfrees.com/)",
   "license": "MIT",
   "devDependencies": {

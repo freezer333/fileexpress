@@ -31,7 +31,7 @@ describe('fx()', function(){
   after(function(){
     db.dropDatabase();
   })
-
+  
   it('should return {} at root request', function(done){
     request.get('/')
            .expect(200, '{}', done)
@@ -53,6 +53,7 @@ describe('fx()', function(){
       }
       router.auth = authorize;
     });
+
     it('get should return 401 if authorization function returns false', function(done){
       request.get('/dontallow/')
              .expect(401)
@@ -85,6 +86,7 @@ describe('fx()', function(){
            .expect(has_id)
            .end(done)
   });
+
 
 
 
