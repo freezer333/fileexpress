@@ -11,6 +11,7 @@ var request;
 describe('fx()', function(){
   var app;
   var db;
+  var router;
 
   before(function(done){
     app = createServer();
@@ -21,7 +22,7 @@ describe('fx()', function(){
 
     db.open(function (err) {
       assert.equal(null, err);
-      var router = fx.make_router(mongo, db);
+      router = fx.make_router(mongo, db);
       app.use('/', router);
       done();
     })
@@ -40,6 +41,32 @@ describe('fx()', function(){
     request.get('/foobar/')
            .expect(200, '[]', done)
   });
+
+  describe('unauthorized tests', function(){
+    before( function() {
+      var authorize = function(owner, action, file_id) {
+        if ( owner == "dontallow") return false; // disallow
+        // could check session object, file id, or restrict
+        // by action [get, delete, post])
+
+        return true; // allow request
+      }
+      router.auth = authorize;
+    });
+    it('get should return 401 if authorization function returns false', function(done){
+      request.get('/dontallow/')
+             .expect(401)
+             .end(done)
+    });
+    it('put should return 401 if authorization function returns false', function(done) {
+      request.put('/dontallow/')
+             .field('metadata', '{"filename":"test.txt"}')
+             .attach('file', 'test/files/test.txt')
+             .expect(401)
+             .end(done)
+    });
+  });
+
 
   it('should allow a file to be put', function(done) {
     request.put('/foo/')

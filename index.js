@@ -4,16 +4,24 @@ var fs = require('fs');
 var ObjectID = require('mongodb').ObjectID;
 var mime = require('mime');
 
-var fx = function (mongo, db) {
+var fx = function (mongo, db, user_authorization) {
 
   var router = express.Router();
   var db = db;
   var gfs = Grid(db, mongo);
 
+  router.auth = user_authorization
 
-
+  var check_auth = function(req) {
+    if ( !router.auth ) return true;
+    return router.auth(req.params.owner, req.method, req.params.id);
+  }
 
   var add = function(req, res, next) {
+    if ( !check_auth(req)) {
+      res.status(401).end();
+      return;
+    }
     if ( !req.body.metadata ) {
       res.status(406).send('metadata must be sent along with the new file');
       return;
@@ -44,6 +52,10 @@ var fx = function (mongo, db) {
 
 
   var list = function(req, res, next) {
+    if ( !check_auth(req)) {
+      res.status(401).end();
+      return;
+    }
     var collection = db.collection('fs.files');
     collection.find({"metadata.owner":req.params.owner}).toArray(function(err, docs) {
       res.json(docs);
@@ -54,6 +66,10 @@ var fx = function (mongo, db) {
 
 
   var delete_file = function (req, res, next) {
+    if ( !check_auth(req)) {
+      res.status(401).end();
+      return;
+    }
     gfs.files.find(makeq(req)).toArray(function (err, files) {
       if ( err ) {
         res.status(400).send('file could not be found because of an invalid query');
@@ -74,7 +90,7 @@ var fx = function (mongo, db) {
           }
         });
       }
-    }
+    })
   }
 
 
@@ -90,6 +106,10 @@ var fx = function (mongo, db) {
 
 
   var getmeta = function(req, res, next) {
+    if ( !check_auth(req)) {
+      res.status(401).end();
+      return;
+    }
     gfs.files.find(makeq(req)).toArray(function (err, files) {
       if ( err ) {
         res.status(400).send('file could not be found because of an invalid query');
@@ -109,6 +129,10 @@ var fx = function (mongo, db) {
 
 
   var getcontent = function(req, res, next) {
+    if ( !check_auth(req)) {
+      res.status(401).end();
+      return;
+    }
     var q= makeq(req);
     gfs.files.find(q).toArray(function (err, files) {
       if ( err ) {
