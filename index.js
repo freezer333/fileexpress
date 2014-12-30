@@ -14,7 +14,7 @@ var fx = function (mongo, db, user_authorization) {
 
   var check_auth = function(req) {
     if ( !router.auth ) return true;
-    return router.auth(req.params.owner, req.method, req.params.id);
+    return router.auth(req, req.params.owner, req.method, req.params.id);
   }
 
   var add = function(req, res, next) {

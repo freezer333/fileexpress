@@ -31,7 +31,7 @@ describe('fx()', function(){
   after(function(){
     db.dropDatabase();
   })
-  
+
   it('should return {} at root request', function(done){
     request.get('/')
            .expect(200, '{}', done)
@@ -44,7 +44,7 @@ describe('fx()', function(){
 
   describe('unauthorized tests', function(){
     before( function() {
-      var authorize = function(owner, action, file_id) {
+      var authorize = function(req, owner, action, file_id) {
         if ( owner == "dontallow") return false; // disallow
         // could check session object, file id, or restrict
         // by action [get, delete, post])
