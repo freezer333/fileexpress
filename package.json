@@ -1,6 +1,6 @@
 {
   "name": "fileexpress",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "File upload/serving routes for express 4+ using MongoDB GridFS",
   "main": "index.js",
   "scripts": {

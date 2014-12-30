@@ -149,6 +149,7 @@ var fx = function (mongo, db, user_authorization) {
       }
       var content_type = files[0].contentType;
       res.set('Content-Type', content_type);
+      res.set('Content-Disposition', 'inline; filename="'+files[0].metadata.filename+'"');
       var readstream = gfs.createReadStream(q);
       readstream.pipe(res);
     });
