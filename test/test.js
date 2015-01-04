@@ -87,6 +87,13 @@ describe('fx()', function(){
            .end(done)
   });
 
+  it('should allow a file to be posted without metadata', function(done) {
+    request.post('/foo/')
+           .attach('file', 'test/files/test.txt')
+           .expect(has_id)
+           .end(done)
+  });
+
 
 
 

@@ -22,25 +22,25 @@ var fx = function (mongo, db, user_authorization) {
       res.status(401).end();
       return;
     }
-    if ( !req.body.metadata ) {
-      res.status(406).send('metadata must be sent along with the new file');
+    if ( !req.files || !req.files.file ) {
+      res.status(206).end("No file specified in the upload");
       return;
     }
 
-    var metadata = JSON.parse(req.body.metadata)
-    if (!metadata.filename) {
-      res.status(406).send('filename is required property of metadata field');
-      return;
+    var filename = req.files.file.filename;
+
+    var metadata = req.body.metadata ? JSON.parse(req.body.metadata) : {};
+    if (metadata.filename) {
+      filename = metadata.filename;
     }
     var file_data = {
-      filename : metadata.filename,
+      filename : filename,
       metadata : metadata,
-      content_type : mime.lookup(metadata.filename),
+      content_type : mime.lookup(filename),
       mode : "w"
     }
     var meta = metadata;
     file_data.metadata.owner = req.params.owner;
-
     var writestream = gfs.createWriteStream(file_data);
     fs.createReadStream(req.files.file.file).pipe(writestream);
     writestream.on('close', function (file) {
