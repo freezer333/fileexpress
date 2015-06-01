@@ -5,7 +5,7 @@ var ObjectID = require('mongodb').ObjectID;
 var mime = require('mime');
 
 var fx = function (mongo, db, user_authorization) {
-
+  mongo.BSONPure = require('bson').BSONPure
   var router = express.Router();
   var db = db;
   var gfs = Grid(db, mongo);
