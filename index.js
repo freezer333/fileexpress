@@ -4,13 +4,16 @@ var fs = require('fs');
 var ObjectID = require('mongodb').ObjectID;
 var mime = require('mime');
 
-var fx = function (mongo, db, user_authorization) {
+var fx = function (mongo, db, user_authorization, get_callback, add_callback, delete_callback) {
   mongo.BSONPure = require('bson').BSONPure
   var router = express.Router();
   var db = db;
   var gfs = Grid(db, mongo);
 
   router.auth = user_authorization
+  router.get_callback = get_callback
+  router.add_callback = add_callback;
+  router.delete_callback = delete_callback;
 
   var check_auth = function(req) {
     if ( !router.auth ) return true;
@@ -46,6 +49,10 @@ var fx = function (mongo, db, user_authorization) {
     writestream.on('close', function (file) {
       res.json(file);
     });
+
+    if (router.add_callback) {
+        add_callback(meta)
+    }
   }
 
 
@@ -86,6 +93,9 @@ var fx = function (mongo, db, user_authorization) {
             res.status(400).send('file could not be found because of an invalid query');
           }
           else {
+            if (router.delete_callback) {
+              delete_callback(files[0].metadata)
+            }
             res.status(200).end();
           }
         });
@@ -147,6 +157,10 @@ var fx = function (mongo, db, user_authorization) {
         res.status(404).send('file could not be found');
         return;
       }
+      if (router.get_callback) {
+        get_callback(files[0].metadata)
+      }
+
       var content_type = files[0].contentType;
       res.set('Content-Type', content_type);
       res.set('Content-Disposition', 'inline; filename="'+files[0].metadata.filename+'"');
