@@ -48,11 +48,10 @@ var fx = function (mongo, db, user_authorization, get_callback, add_callback, de
     fs.createReadStream(req.files.file.file).pipe(writestream);
     writestream.on('close', function (file) {
       res.json(file);
-    });
-
-    if (router.add_callback) {
+      if (router.add_callback) {
         add_callback(meta)
-    }
+      }
+    });
   }
 
 
