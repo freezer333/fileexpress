@@ -87,7 +87,7 @@ var fx = function (mongo, db, user_authorization, get_callback, add_callback, de
         res.status(404).send('file could not be found');
       }
       else {
-        gfs.remove(makeq(req), function (err) {
+        gfs.remove(files[0], function (err) {
           if (err) {
             res.status(400).send('file could not be found because of an invalid query');
           }
