@@ -134,6 +134,32 @@ var fx = function (mongo, db, user_authorization, get_callback, add_callback, de
       }
     })
   }
+  var updatemeta = function(req, res, next) {
+    if ( !check_auth(req)) {
+      res.status(401).end();
+      return;
+    }
+    gfs.files.find(makeq(req)).toArray(function (err, files) {
+      if ( err ) {
+        res.status(400).send('file could not be found because of an invalid query');
+      }
+      else if ( files.length < 1 ) {
+        res.status(404).send('file could not be found');
+      }
+      else if ( files[0].metadata.owner != req.params.owner) {
+        res.status(404).send('file could not be found');
+      }
+      else {
+        var update = {}
+        for (var key in req.body) {
+          update["metadata."+key] = req.body[key];
+        }
+        gfs.files.update(makeq(req), {$set: update }, function(err) {
+          res.status(200).send();
+        })
+      }
+    })
+  }
 
 
 
@@ -178,6 +204,7 @@ var fx = function (mongo, db, user_authorization, get_callback, add_callback, de
 
   router.get('/:owner/', list);
   router.get('/:owner/:id/meta', getmeta);
+  router.post('/:owner/:id/meta', updatemeta);
   router.get('/:owner/:id', getcontent);
   router.put('/:owner/', add);
   router.post('/:owner/', add);

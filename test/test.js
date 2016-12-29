@@ -213,7 +213,34 @@ describe('fx()', function(){
 
 
 
+  describe('update metadata', function(){
+    var _id;
+    before( function(done) {
+      request.post('/ghost/')
+             .field('metadata', '{"filename":"test.txt", "other":"abc"}')
+             .attach('file', 'test/files/test.txt')
+             .end(function(err, res) {
+               _id = res.body._id;
+               done();
+             });
+    });
 
+    it('should return modified metadata after update', function(done) {
+      request.post('/ghost/'+_id+"/meta")
+             .field('other', 'xyz')
+             .end(function(err, res) {
+               request.get('/ghost/'+_id+"/meta/")
+               .expect(function(res) {
+                  if ( res.status != 200 ) {
+                    return "Response was expected to be 200";
+                  }
+                 if (res.body.metadata.other != 'xyz' ) return "Response was not as expected - was " + res.body.metadata.other;
+               })
+               .end(done)
+              
+             });
+    });
+  });
   describe('file deletion', function(){
     var _id;
     before( function(done) {
